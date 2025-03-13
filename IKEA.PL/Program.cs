@@ -1,4 +1,6 @@
+using IKEA.BLL.Services.DepartmentServices;
 using IKEA.DAL.Presistence.Data;
+using IKEA.DAL.Presistence.Repositories.Departments;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.PL
@@ -15,10 +17,12 @@ namespace IKEA.PL
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Server=.;Database=IKEA;Trusted_Connection=True;TrustServerCertificate=true;");
+                options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
             });
 
-
+            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
+            
+            
             // No Need =>
 
             //builder.Services.AddScoped<ApplicationDbContext>();
@@ -30,6 +34,8 @@ namespace IKEA.PL
             //    return options;
             //});
             #endregion
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
