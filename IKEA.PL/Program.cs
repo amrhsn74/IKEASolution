@@ -22,7 +22,8 @@ namespace IKEA.PL
 
             builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             
-            
+            builder.Services.AddScoped<IDepartmentServices, DepartmentServices>();
+
             // No Need =>
 
             //builder.Services.AddScoped<ApplicationDbContext>();
