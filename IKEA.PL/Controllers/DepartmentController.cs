@@ -2,6 +2,7 @@
 using IKEA.BLL.DTOs.Departments;
 using IKEA.BLL.Services.DepartmentServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace IKEA.PL.Controllers
 {
@@ -95,6 +96,104 @@ namespace IKEA.PL.Controllers
         }
         #endregion
 
+        #region Update
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+            var department = departmentServices.GetDepartmentById(id.Value);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            var MappedDepartment = new UpdatedDepartmentDto
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Code = department.Code,
+                Description = department.Description,
+                CreationDate = department.CreationDate
+            };
+            return View(MappedDepartment);
+        }
 
+        [HttpPost]
+        public IActionResult Edit(UpdatedDepartmentDto departmentDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(departmentDto);
+            }
+            var message = string.Empty;
+            try
+            {
+                var result = departmentServices.UpdateDepartment(departmentDto);
+                if (result > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    message = "Error in Updating Department";
+                    ModelState.AddModelError(string.Empty, message);
+                    return View(departmentDto);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 1. Log Exception
+                logger.LogError(ex, ex.Message);
+
+                // 2. Set Default Error Message
+                message = environment.IsDevelopment() ? ex.Message : "Error in Updating Department";
+            }
+            ModelState.AddModelError(string.Empty, message);
+            return View(departmentDto);
+        }
+        #endregion
+
+        #region Delete
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+            var department = departmentServices.GetDepartmentById(id.Value);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return View(department);
+        }
+        [HttpPost]
+        public IActionResult Delete(int DeptId)
+        {
+            var message = string.Empty;
+            try
+            {
+                var IsDeleted = departmentServices.DeleteDepartment(DeptId);
+                if (IsDeleted)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                message = "Error in Deleting Department";
+                 
+            }
+            catch (Exception ex)
+            {
+                // 1. Log Exception
+                logger.LogError(ex, ex.Message);
+                // 2. Set Default Error Message
+                message = environment.IsDevelopment() ? ex.Message : "Error in Deleting Department";
+            }
+            ModelState.AddModelError(string.Empty, message);
+            return RedirectToAction(nameof(Delete), new {id = DeptId});
+        }
+        #endregion
     }
 }
