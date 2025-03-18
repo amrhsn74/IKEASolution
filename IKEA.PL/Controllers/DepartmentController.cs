@@ -8,6 +8,7 @@ namespace IKEA.PL.Controllers
 {
     public class DepartmentController : Controller
     {
+        #region Services - DI
         private readonly IDepartmentServices departmentServices;
         private readonly ILogger<DepartmentController> logger;
         private readonly IWebHostEnvironment environment;
@@ -18,6 +19,7 @@ namespace IKEA.PL.Controllers
             logger = _logger;
             environment = _environment;
         }
+        #endregion
 
         #region Index
         [HttpGet]
