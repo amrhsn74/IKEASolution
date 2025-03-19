@@ -11,11 +11,12 @@ namespace IKEA.BLL.Services.DepartmentServices
 {
     public class DepartmentServices : IDepartmentServices
     {
-        private IDepartmentRepository Repository;
+        private readonly IDepartmentRepository Repository;
         public DepartmentServices(IDepartmentRepository repository)
         {
             Repository = repository;
         }
+
         public IEnumerable<DepartmentDto> GetAllDepartments(bool WithNoTracking = true)
         {
             var Departments = Repository.GetAll().Select(dept => new DepartmentDto() 
@@ -63,7 +64,6 @@ namespace IKEA.BLL.Services.DepartmentServices
                 IsDeleted = Department.IsDeleted
             };
         }
-
         public int CreatedDepartment(CreatedDepartmentDto departmentDto)
         {
             var CreatedDepartment = new Department
@@ -94,7 +94,6 @@ namespace IKEA.BLL.Services.DepartmentServices
             };
             return Repository.Update(UpdatedDepartment);
         }
-
         public bool DeleteDepartment(int id)
         {
             var Department = Repository.GetById(id);
