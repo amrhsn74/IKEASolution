@@ -25,7 +25,7 @@ namespace IKEA.DAL.Presistence.Data.Configurations.EmployeeConfigurations
             builder.Property(E => E.EmployeeType).HasConversion
                 (
                      (Type) => Type.ToString(),
-                     (Type) => (EmpployeeType)Enum.Parse(typeof(EmpployeeType), Type)
+                     (Type) => (EmployeeType)Enum.Parse(typeof(EmployeeType), Type)
                 );
             // Development Usage
             builder.Property(D => D.CreatedOn).HasDefaultValueSql("Getdate()");

@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace IKEA.DAL.Common.Enums
 {
-    public enum EmpployeeType
+    public enum EmployeeType
     {
         PartTime = 1,
-        FullTime = 2
+        FullTime = 2,
+        Remote = 3,
+        Intern = 4
     }
 }

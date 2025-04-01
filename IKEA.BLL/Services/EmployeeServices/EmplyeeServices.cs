@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IKEA.BLL.DTOs.Employees;
 using IKEA.DAL.Models.Employees;
 using IKEA.DAL.Presistence.Repositories.Employees;
+using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.BLL.Services.EmployeeServices
 {
@@ -19,7 +20,9 @@ namespace IKEA.BLL.Services.EmployeeServices
 
         public IEnumerable<EmployeeDto> GetAllEmployees(bool WithNoTracking = true)
         {
-            return  _employeeRepository.GetAll().Where(E => E.IsDeleted == false).Select(E => new EmployeeDto()
+            var Employees = _employeeRepository.GetAll();
+            var FilteredEmployees = Employees.Where(E => E.IsDeleted == false);
+            var AfterFilteration = FilteredEmployees.Include(E => E.Department).Select(E => new EmployeeDto()
             {
                 Id = E.Id,
                 Name = E.Name,
@@ -27,10 +30,12 @@ namespace IKEA.BLL.Services.EmployeeServices
                 Salary = E.Salary,
                 IsActive = E.IsActive,
                 Email = E.Email,
-                Gender = nameof(E.Gender),
-                EmployeeType = nameof(E.EmployeeType)
+                Gender = E.Gender,
+                EmployeeType = E.EmployeeType,
+                Department = E.Department.Name ?? "N/A"
             }
-            ).ToList();
+            );
+            return AfterFilteration.ToList();
         }
         public EmployeeDetailsDto GetEmployeeById(int id)
         {
@@ -50,6 +55,7 @@ namespace IKEA.BLL.Services.EmployeeServices
                     HiringDate = employee.HiringDate,
                     Gender = employee.Gender,
                     EmployeeType = employee.EmployeeType,
+                    Department = employee.Department.Name ?? "N/A",
                     CreatedBy = employee.CreatedBy,
                     CreatedOn = employee.CreatedOn,
                     LastModifiedBy = employee.LastModifiedBy,
@@ -72,6 +78,7 @@ namespace IKEA.BLL.Services.EmployeeServices
                 HiringDate = employeeDto.HiringDate,
                 Gender = employeeDto.Gender,
                 EmployeeType = employeeDto.EmployeeType,
+                DepartmentId = employeeDto.DepartmentId,
                 CreatedBy = 1,
                 LastModifiedBy = 1,
                 CreatedOn = DateTime.Now,
@@ -94,6 +101,7 @@ namespace IKEA.BLL.Services.EmployeeServices
                 HiringDate = employeeDto.HiringDate,
                 Gender = employeeDto.Gender,
                 EmployeeType = employeeDto.EmployeeType,
+                DepartmentId = employeeDto.DepartmentId,
                 LastModifiedBy = 1,
                 LastModifiedOn = DateTime.Now,
             };

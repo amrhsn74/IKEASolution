@@ -7,7 +7,7 @@
 <h1>Departments</h1>
 <br />
 <br />
-<a asp-controller="Department" asp-action="Create" class="btn btn-primary">Create new department</a>
+<a asp-controller="Department" asp-action="Create" class="btn btn-primary">Create New Department</a>
 <br />
 
 @if(Model.Count()>0)
@@ -26,24 +26,11 @@
         <tbody class="text-center">
             @foreach (var dept in Model)
             {
-				<tr class="text-center">
+				<tr>
 					<td>@dept.Code</td>
 					<td>@dept.Name</td>
 					<td>@dept.CreationDate</td>
-					<td class="text-center">
-                        <a asp-controller="Department" asp-action="Details" asp-route-id="@dept.Id" class="btn-warning">
-                            <i class="fas fa-eye"></i>Details
-                        </a>
-                        <a asp-controller="Department" asp-action="Edit" asp-route-id="@dept.Id" class="btn-success">
-                            <i class="fas fa-edit"></i>Update
-                        </a>
-@*                         <a asp-controller="Department" asp-action="Delete" asp-route-id="@dept.Id" class="btn-dark">
-                            <i class="fas fa-trash"></i>Delete
-                        </a> *@
-						<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteDepartment">
-							<i class="fas fa-trash"></i>Delete
-                        </button>
-                    </td>
+					<partial name="_ButtonsPartial" model="@dept.Id" />
 				</tr>
                 <!-- Modal -->
                 <div class="modal fade" id="DeleteDepartment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -75,7 +62,7 @@
 else
 {
 	<div class="alert alert-warning text-center mt-3">
-		There Is No Departments	
+		<h3>There Is No Departments :(</h3>	
     </div>
 }
 

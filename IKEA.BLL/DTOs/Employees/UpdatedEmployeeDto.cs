@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace IKEA.BLL.DTOs.Employees
         public string? PhoneNumber { get; set; }
         public DateOnly HiringDate { get; set; }
         public Gender Gender { get; set; }
-        public EmpployeeType EmployeeType { get; set; }
+        public EmployeeType EmployeeType { get; set; }
+        [Display(Name = "Department")]
+        public int? DepartmentId { get; set; }
     }
 }
