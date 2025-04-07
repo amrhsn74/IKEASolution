@@ -12,6 +12,7 @@ namespace IKEA.PL.Controllers
     {
         #region Services - DI
         private readonly IEmployeeServices employeeService;
+        private readonly IDepartmentServices departmentServices;
         private readonly ILogger<EmployeeController> logger;
         private readonly IWebHostEnvironment environment;
         public EmployeeController(IEmployeeServices employeeService,ILogger<EmployeeController> logger,IWebHostEnvironment environment)
@@ -24,9 +25,9 @@ namespace IKEA.PL.Controllers
 
         #region Index
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string search)
         {
-            var Employees = employeeService.GetAllEmployees();
+            var Employees = employeeService.GetAllEmployees(search);
             return View(Employees);
         }
         #endregion
@@ -52,6 +53,7 @@ namespace IKEA.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            ViewData["Departments"] = departmentServices.GetAllDepartments();
             return View();
         }
 
@@ -77,6 +79,7 @@ namespace IKEA.PL.Controllers
                     Gender = employeeVM.Gender,
                     EmployeeType = employeeVM.EmployeeType,
                     HiringDate = employeeVM.HiringDate,
+                    DepartmentId = employeeVM.DepartmentId
                 };
                 var result = employeeService.CreatedEmployee(employeeDto);
                 if (result > 0)
@@ -115,6 +118,7 @@ namespace IKEA.PL.Controllers
             }
             var MappedEmployee= new EmployeeVM
             {
+                Id = employee.Id,
                 Name = employee.Name,
                 Age = employee.Age,
                 Address = employee.Address,
@@ -142,6 +146,7 @@ namespace IKEA.PL.Controllers
             {
                 var employeeDto = new UpdatedEmployeeDto()
                 {
+                    Id = employeeVM.Id,
                     Name = employeeVM.Name,
                     Age = employeeVM.Age,
                     Address = employeeVM.Address,
@@ -152,6 +157,7 @@ namespace IKEA.PL.Controllers
                     Gender = employeeVM.Gender,
                     EmployeeType = employeeVM.EmployeeType,
                     IsActive = employeeVM.IsActive,
+                    DepartmentId = employeeVM.DepartmentId
                 };
                 var result = employeeService.UpdateEmployee(employeeDto);
                 if (result > 0)

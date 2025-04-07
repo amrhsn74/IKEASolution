@@ -3,6 +3,7 @@ using IKEA.BLL.Services.EmployeeServices;
 using IKEA.DAL.Presistence.Data;
 using IKEA.DAL.Presistence.Repositories.Departments;
 using IKEA.DAL.Presistence.Repositories.Employees;
+using IKEA.PL.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.PL
@@ -30,6 +31,8 @@ namespace IKEA.PL
 
             builder.Services.AddScoped<IEmployeeServices, EmplyeeServices>();
 
+            builder.Services.AddAutoMapper(M => M.AddProfile(typeof(MappingProfile)));
+
             // No Need =>
 
             //builder.Services.AddScoped<ApplicationDbContext>();
@@ -42,9 +45,9 @@ namespace IKEA.PL
             //});
             #endregion
 
-
             var app = builder.Build();
 
+            #region Configure Middleware
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -63,6 +66,8 @@ namespace IKEA.PL
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            #endregion
 
             app.Run();
         }

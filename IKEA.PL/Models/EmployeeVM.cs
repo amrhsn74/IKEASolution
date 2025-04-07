@@ -5,6 +5,7 @@ namespace IKEA.PL.Models
 {
     public class EmployeeVM
     {
+        public int Id { get; set;}
         [MaxLength(50, ErrorMessage = "Max Length Of Name Is 50 Chars")]
         [MinLength(5, ErrorMessage = "Min Length Of Name Is 5 Chars")]
         public string Name { get; set; }
@@ -25,6 +26,7 @@ namespace IKEA.PL.Models
         public DateOnly HiringDate { get; set; }
         public Gender Gender { get; set; }
         public EmployeeType EmployeeType { get; set; }
+        [Display(Name ="Department")]
         public int? DepartmentId { get; set; }
 
     }

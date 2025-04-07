@@ -5,7 +5,7 @@
 
 <div class="row justify-content-center align-content-center flex-column">
     <h1 class="col-6 my-4">Update Employee @Model.Name,</h1>
-    <form asp-action="Create" method="post" class="row col-6">
+    <form asp-action="Edit" method="post" class="row col-6">
 
 		<partial name="Partials/_CreatedPartial" model="@Model " />
 
@@ -16,7 +16,6 @@
     </form>
 </div>
 
-//Section
 @section ValidateScripts {
     <partial name="_ValidationScriptsPartial" />
 }

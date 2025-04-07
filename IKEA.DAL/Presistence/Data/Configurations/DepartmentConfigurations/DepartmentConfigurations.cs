@@ -17,13 +17,14 @@ namespace IKEA.DAL.Presistence.Data.Configurations.DepartmentConfigurations
             builder.Property(D => D.Name).HasColumnType("varchar(50)").IsRequired();
             builder.Property(D => D.Code).HasColumnType("varchar(20)").IsRequired();
 
-            // Development Usage
-            builder.Property(D => D.CreatedOn).HasDefaultValueSql("Getdate()");
-            builder.Property(D => D.LastModifiedOn).HasComputedColumnSql("Getdate()");
             builder.HasMany(D => D.Employees)
                     .WithOne(E => E.Department)
                     .HasForeignKey(E => E.DepartmentId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+            // Development Usage
+            builder.Property(D => D.CreatedOn).HasDefaultValueSql("Getdate()");
+            builder.Property(D => D.LastModifiedOn).HasComputedColumnSql("Getdate()");
         }
     }
 }

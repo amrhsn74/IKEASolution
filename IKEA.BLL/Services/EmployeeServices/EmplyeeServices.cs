@@ -18,10 +18,10 @@ namespace IKEA.BLL.Services.EmployeeServices
             _employeeRepository = Repository;
         }
 
-        public IEnumerable<EmployeeDto> GetAllEmployees(bool WithNoTracking = true)
+        public IEnumerable<EmployeeDto> GetAllEmployees(string search, bool WithNoTracking = true)
         {
             var Employees = _employeeRepository.GetAll();
-            var FilteredEmployees = Employees.Where(E => E.IsDeleted == false);
+            var FilteredEmployees = Employees.Where(E => E.IsDeleted == false && ( string.IsNullOrEmpty(search) || E.Name.ToLower().Contains(search.ToLower()) ) );
             var AfterFilteration = FilteredEmployees.Include(E => E.Department).Select(E => new EmployeeDto()
             {
                 Id = E.Id,
@@ -55,7 +55,7 @@ namespace IKEA.BLL.Services.EmployeeServices
                     HiringDate = employee.HiringDate,
                     Gender = employee.Gender,
                     EmployeeType = employee.EmployeeType,
-                    Department = employee.Department.Name ?? "N/A",
+                    Department = employee.Department?.Name ?? "N/A",
                     CreatedBy = employee.CreatedBy,
                     CreatedOn = employee.CreatedOn,
                     LastModifiedBy = employee.LastModifiedBy,
