@@ -25,22 +25,22 @@ namespace IKEA.PL.Controllers
 
         #region Index
         [HttpGet]
-        public IActionResult Index(string search)
+        public async Task<IActionResult> Index(string search)
         {
-            var Employees = employeeService.GetAllEmployees(search);
+            var Employees = await employeeService.GetAllEmployees(search);
             return View(Employees);
         }
         #endregion
 
         #region Details
         [HttpGet]
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var employee = employeeService.GetEmployeeById(id.Value);
+            var employee = await employeeService.GetEmployeeById(id.Value);
             if (employee == null)
             {
                 return NotFound();
@@ -59,7 +59,7 @@ namespace IKEA.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(EmployeeVM employeeVM)
+        public async Task<IActionResult> Create(EmployeeVM employeeVM)
         {
             // Server-Side Validation
             if (!ModelState.IsValid)
@@ -79,9 +79,10 @@ namespace IKEA.PL.Controllers
                     Gender = employeeVM.Gender,
                     EmployeeType = employeeVM.EmployeeType,
                     HiringDate = employeeVM.HiringDate,
-                    DepartmentId = employeeVM.DepartmentId
+                    DepartmentId = employeeVM.DepartmentId,
+                    Image = employeeVM.Image
                 };
-                var result = employeeService.CreatedEmployee(employeeDto);
+                var result = await employeeService.CreatedEmployee(employeeDto);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -105,13 +106,13 @@ namespace IKEA.PL.Controllers
 
         #region Update
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var employee = employeeService.GetEmployeeById(id.Value);
+            var employee = await employeeService.GetEmployeeById(id.Value);
             if (employee == null)
             {
                 return NotFound();
@@ -136,7 +137,7 @@ namespace IKEA.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EmployeeVM employeeVM)
+        public async Task<IActionResult> Edit(EmployeeVM employeeVM)
         {
             if (!ModelState.IsValid)
             {
@@ -158,9 +159,11 @@ namespace IKEA.PL.Controllers
                     Gender = employeeVM.Gender,
                     EmployeeType = employeeVM.EmployeeType,
                     IsActive = employeeVM.IsActive,
-                    DepartmentId = employeeVM.DepartmentId
+                    DepartmentId = employeeVM.DepartmentId,
+                    ImageName = employeeVM.ImageName,
+                    Image = employeeVM.Image
                 };
-                var result = employeeService.UpdateEmployee(employeeDto);
+                var result = await employeeService.UpdateEmployee(employeeDto);
                 if (result > 0)
                 {
                     return RedirectToAction(nameof(Index));
@@ -187,13 +190,13 @@ namespace IKEA.PL.Controllers
 
         #region Delete
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var employee = employeeService.GetEmployeeById(id.Value);
+            var employee = await employeeService.GetEmployeeById(id.Value);
             if (employee == null)
             {
                 return NotFound();
@@ -202,12 +205,12 @@ namespace IKEA.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int EmpId)
+        public async Task<IActionResult> Delete(int EmpId)
         {
             var message = string.Empty;
             try
             {
-                var IsDeleted = employeeService.DeleteEmployee(EmpId);
+                var IsDeleted = await employeeService.DeleteEmployee(EmpId);
                 if (IsDeleted)
                 {
                     return RedirectToAction(nameof(Index));

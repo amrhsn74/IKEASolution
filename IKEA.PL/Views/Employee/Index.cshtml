@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EmployeeDto>
 @inject IDepartmentServices departmentServices
 @{
-    var Departments = new SelectList(departmentServices.GetAllDepartments(), nameof(DepartmentDto.Id), nameof(DepartmentDto.Name));
+    var Departments = new SelectList(await departmentServices.GetAllDepartments(), nameof(DepartmentDto.Id), nameof(DepartmentDto.Name));
 }
 @{
     ViewData["Title"] = "Employees";

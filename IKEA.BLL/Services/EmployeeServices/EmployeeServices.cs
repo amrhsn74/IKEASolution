@@ -28,7 +28,7 @@ namespace IKEA.BLL.Services.EmployeeServices
             attachementServices = _attachementServices;
         }
 
-        public IEnumerable<EmployeeDto> GetAllEmployees(string search, bool WithNoTracking = true)
+        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(string search, bool WithNoTracking = true)
         {
             var Employees = unitOfWork.EmployeeRepository.GetAll();
             var FilteredEmployees = Employees.Where(E => E.IsDeleted == false && ( string.IsNullOrEmpty(search) || E.Name.ToLower().Contains(search.ToLower()) ) );
@@ -45,11 +45,11 @@ namespace IKEA.BLL.Services.EmployeeServices
                 Department = E.Department.Name ?? "N/A"
             }
             );
-            return AfterFilteration.ToList();
+            return await AfterFilteration.ToListAsync();
         }
-        public EmployeeDetailsDto GetEmployeeById(int id)
+        public async Task<EmployeeDetailsDto?> GetEmployeeById(int id)
         {
-            var employee = unitOfWork.EmployeeRepository.GetById(id);
+            var employee = await unitOfWork.EmployeeRepository.GetById(id);
             if (employee is not null)
             {
                 return new EmployeeDetailsDto
@@ -75,7 +75,7 @@ namespace IKEA.BLL.Services.EmployeeServices
             }
             return null;
         }
-        public int CreatedEmployee(CreatedEmployeeDto employeeDto)
+        public async Task<int> CreatedEmployee(CreatedEmployeeDto employeeDto)
         {
             var employee = new Employee
             {
@@ -100,9 +100,9 @@ namespace IKEA.BLL.Services.EmployeeServices
                 employee.ImageName = attachementServices.UploadImage(employeeDto.Image,"images");
             }
             unitOfWork.EmployeeRepository.Add(employee);
-            return unitOfWork.SaveChanges();
+            return await unitOfWork.SaveChanges();
         }
-        public int UpdateEmployee(UpdatedEmployeeDto employeeDto)
+        public async Task<int> UpdateEmployee(UpdatedEmployeeDto employeeDto)
         {
             var employee = new Employee
             {
@@ -127,33 +127,34 @@ namespace IKEA.BLL.Services.EmployeeServices
                 if(employee.ImageName is not null)
                 {
                     // Delete the old image file if it exists
-                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", employee.ImageName);
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","files", "images", employee.ImageName);
                     attachementServices.DeleteImage(oldFilePath);
                 }
                 employee.ImageName = attachementServices.UploadImage(employeeDto.Image, "images");
             }
+            //employee.ImageName = attachementServices.UploadImage(employeeDto.Image, "images");
             unitOfWork.EmployeeRepository.Update(employee);
-            return unitOfWork.SaveChanges();
+            return await unitOfWork.SaveChanges();
         }
-        public bool DeleteEmployee(int id)
+        public async Task<bool> DeleteEmployee(int id)
         {
-            var Employee = unitOfWork.EmployeeRepository.GetById(id);
+            var Employee = await unitOfWork.EmployeeRepository.GetById(id);
             //int result=0;
             if (Employee is not null) 
             {
                 if (Employee.ImageName is not null)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", Employee.ImageName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","files", "images", Employee.ImageName);
                     attachementServices.DeleteImage(filePath);
                 }
                 unitOfWork.EmployeeRepository.Delete(Employee);
-                return unitOfWork.SaveChanges() > 0 ? true : false;
+                return await unitOfWork.SaveChanges() > 0 ? true : false;
             }
             else
             { 
                 Employee.IsDeleted = true;
                 unitOfWork.EmployeeRepository.Update(Employee);
-                return unitOfWork.SaveChanges() > 0 ? true : false;
+                return await unitOfWork.SaveChanges() > 0 ? true : false;
             }
         }
     }

@@ -27,7 +27,7 @@ namespace IKEA.PL.Controllers
 
         #region Index
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var Departments = departmentServices.GetAllDepartments();
             return View(Departments);
@@ -35,13 +35,13 @@ namespace IKEA.PL.Controllers
         #endregion
 
         #region Details
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var department = departmentServices.GetDepartmentById(id.Value);
+            var department = await departmentServices.GetDepartmentById(id.Value);
             if (department == null)
             {
                 return NotFound();
@@ -59,7 +59,7 @@ namespace IKEA.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(DepartmentVM departmentVM)
+        public async Task<IActionResult> Create(DepartmentVM departmentVM)
         {
             // Server-Side Validation
             if (!ModelState.IsValid)
@@ -77,7 +77,7 @@ namespace IKEA.PL.Controllers
                 //    Code = departmentVM.Code,
                 //    Description = departmentVM.Description
                 //};
-                var result = departmentServices.CreatedDepartment(departmentDto);
+                var result = await departmentServices.CreatedDepartment(departmentDto);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -102,13 +102,13 @@ namespace IKEA.PL.Controllers
 
         #region Update
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var department = departmentServices.GetDepartmentById(id.Value);
+            var department = await departmentServices.GetDepartmentById(id.Value);
             if (department == null)
             {
                 return NotFound();
@@ -129,7 +129,7 @@ namespace IKEA.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(DepartmentVM departmentVM)
+        public async Task<IActionResult> Edit(DepartmentVM departmentVM)
         {
             if (!ModelState.IsValid)
             {
@@ -147,7 +147,7 @@ namespace IKEA.PL.Controllers
                 //    Code = departmentVM.Code,
                 //    Description = departmentVM.Description
                 //};
-                var result = departmentServices.UpdateDepartment(departmentDto);
+                var result = await departmentServices.UpdateDepartment(departmentDto);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -168,13 +168,13 @@ namespace IKEA.PL.Controllers
 
         #region Delete
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-            var department = departmentServices.GetDepartmentById(id.Value);
+            var department = await departmentServices.GetDepartmentById(id.Value);
             if (department == null)
             {
                 return NotFound();
@@ -183,12 +183,12 @@ namespace IKEA.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int DeptId)
+        public async Task<IActionResult> Delete(int DeptId)
         {
             var message = string.Empty;
             try
             {
-                var IsDeleted = departmentServices.DeleteDepartment(DeptId);
+                var IsDeleted = await departmentServices.DeleteDepartment(DeptId);
                 if (IsDeleted)
                 {
                     return RedirectToAction(nameof(Index));

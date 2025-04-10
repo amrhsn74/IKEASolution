@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using IKEA.DAL.Models.Departments;
 using IKEA.DAL.Models.Employees;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.DAL.Presistence.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

@@ -26,9 +26,9 @@ namespace IKEA.DAL.Presistence.Repositories._Generics
             }
             return dbContext.Set<T>();
         }
-        public T? GetById(int id)
+        public async Task<T?> GetById(int id)
         {
-            var Entity = dbContext.Set<T>().Find(id);
+            var Entity = await dbContext.Set<T>().FindAsync(id);
             return Entity;
         }
         public void Add(T entity)

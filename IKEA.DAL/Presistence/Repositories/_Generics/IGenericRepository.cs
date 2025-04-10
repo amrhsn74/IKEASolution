@@ -12,7 +12,7 @@ namespace IKEA.DAL.Presistence.Repositories._Generics
     public interface IGenericRepository<T> where T : ModelBase
     {
         IQueryable<T> GetAll(bool WithNoTracking = true);
-        T? GetById(int id);
+        Task<T?> GetById(int id);
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);

@@ -12,6 +12,6 @@ namespace IKEA.DAL.Presistence.UnitOfWork
     {
         public IDepartmentRepository DepartmentRepository { get; }
         public IEmployeeRepository EmployeeRepository { get; }
-        public int SaveChanges();
+        public Task<int> SaveChanges();
     }
 }

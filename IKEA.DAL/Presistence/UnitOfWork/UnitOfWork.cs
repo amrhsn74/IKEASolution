@@ -25,7 +25,7 @@ namespace IKEA.DAL.Presistence.UnitOfWork
 
         public IEmployeeRepository EmployeeRepository => _employeeRepository.Value;
 
-        public int SaveChanges() => dbContext.SaveChanges();
+        public async Task<int> SaveChanges() => await dbContext.SaveChangesAsync();
     }
 
 }
