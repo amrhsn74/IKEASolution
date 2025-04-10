@@ -3,24 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using IKEA.BLL.Common.Services.Attachements;
 using IKEA.BLL.DTOs.Employees;
 using IKEA.DAL.Models.Employees;
 using IKEA.DAL.Presistence.Repositories.Employees;
+using IKEA.DAL.Presistence.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace IKEA.BLL.Services.EmployeeServices
 {
-    public class EmplyeeServices : IEmployeeServices
+    public class EmployeeServices : IEmployeeServices
     {
         private readonly IEmployeeRepository _employeeRepository;
-        public EmplyeeServices(IEmployeeRepository Repository)
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
+        private readonly IAttachementServices attachementServices;
+
+        public EmployeeServices(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachementServices _attachementServices)
         {
-            _employeeRepository = Repository;
+            unitOfWork = _unitOfWork;
+            mapper = _mapper;
+            attachementServices = _attachementServices;
         }
 
         public IEnumerable<EmployeeDto> GetAllEmployees(string search, bool WithNoTracking = true)
         {
-            var Employees = _employeeRepository.GetAll();
+            var Employees = unitOfWork.EmployeeRepository.GetAll();
             var FilteredEmployees = Employees.Where(E => E.IsDeleted == false && ( string.IsNullOrEmpty(search) || E.Name.ToLower().Contains(search.ToLower()) ) );
             var AfterFilteration = FilteredEmployees.Include(E => E.Department).Select(E => new EmployeeDto()
             {
@@ -39,7 +49,7 @@ namespace IKEA.BLL.Services.EmployeeServices
         }
         public EmployeeDetailsDto GetEmployeeById(int id)
         {
-            var employee = _employeeRepository.GetById(id);
+            var employee = unitOfWork.EmployeeRepository.GetById(id);
             if (employee is not null)
             {
                 return new EmployeeDetailsDto
@@ -56,6 +66,7 @@ namespace IKEA.BLL.Services.EmployeeServices
                     Gender = employee.Gender,
                     EmployeeType = employee.EmployeeType,
                     Department = employee.Department?.Name ?? "N/A",
+                    ImageName = employee.ImageName,
                     CreatedBy = employee.CreatedBy,
                     CreatedOn = employee.CreatedOn,
                     LastModifiedBy = employee.LastModifiedBy,
@@ -84,7 +95,12 @@ namespace IKEA.BLL.Services.EmployeeServices
                 CreatedOn = DateTime.Now,
                 LastModifiedOn = DateTime.Now,
             };
-            return _employeeRepository.Add(employee);
+            if (employeeDto.Image is not null)
+            {
+                employee.ImageName = attachementServices.UploadImage(employeeDto.Image,"images");
+            }
+            unitOfWork.EmployeeRepository.Add(employee);
+            return unitOfWork.SaveChanges();
         }
         public int UpdateEmployee(UpdatedEmployeeDto employeeDto)
         {
@@ -102,19 +118,43 @@ namespace IKEA.BLL.Services.EmployeeServices
                 Gender = employeeDto.Gender,
                 EmployeeType = employeeDto.EmployeeType,
                 DepartmentId = employeeDto.DepartmentId,
+                ImageName = employeeDto.ImageName,
                 LastModifiedBy = 1,
                 LastModifiedOn = DateTime.Now,
             };
-            return _employeeRepository.Update(employee);
+            if (employeeDto.Image is not null)
+            {
+                if(employee.ImageName is not null)
+                {
+                    // Delete the old image file if it exists
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", employee.ImageName);
+                    attachementServices.DeleteImage(oldFilePath);
+                }
+                employee.ImageName = attachementServices.UploadImage(employeeDto.Image, "images");
+            }
+            unitOfWork.EmployeeRepository.Update(employee);
+            return unitOfWork.SaveChanges();
         }
         public bool DeleteEmployee(int id)
         {
-            var Employee = _employeeRepository.GetById(id);
+            var Employee = unitOfWork.EmployeeRepository.GetById(id);
             //int result=0;
-            if (Employee is not null)
-                return _employeeRepository.Delete(Employee) > 0;
+            if (Employee is not null) 
+            {
+                if (Employee.ImageName is not null)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", Employee.ImageName);
+                    attachementServices.DeleteImage(filePath);
+                }
+                unitOfWork.EmployeeRepository.Delete(Employee);
+                return unitOfWork.SaveChanges() > 0 ? true : false;
+            }
             else
-                return false;
+            { 
+                Employee.IsDeleted = true;
+                unitOfWork.EmployeeRepository.Update(Employee);
+                return unitOfWork.SaveChanges() > 0 ? true : false;
+            }
         }
     }
 }

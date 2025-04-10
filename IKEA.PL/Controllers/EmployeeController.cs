@@ -53,7 +53,7 @@ namespace IKEA.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["Departments"] = departmentServices.GetAllDepartments();
+            //ViewData["Departments"] = departmentServices.GetAllDepartments();
             return View();
         }
 
@@ -129,6 +129,7 @@ namespace IKEA.PL.Controllers
                 Gender = employee.Gender,
                 EmployeeType = employee.EmployeeType,
                 IsActive = employee.IsActive,
+                ImageName = employee.ImageName
             };
             return View(MappedEmployee);
         }

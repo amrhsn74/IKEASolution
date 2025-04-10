@@ -5,9 +5,9 @@
 
 <div class="row justify-content-center align-content-center flex-column">
     <h1 class="col-6 my-4">Create Employee</h1>
-    <form asp-action="Create" method="post" class="row col-6">
+    <form asp-action="Create" method="post" class="row col-6" enctype="multipart/form-data">
 
-		<partial name="Partials/_CreatedPartial" model="@Model " />
+		<partial name="Partials/_CreatEditPartial" model="@Model " />
 
         <div class="mt-4">
             <input type="submit" value="Create" class="btn btn-primary" /> | 

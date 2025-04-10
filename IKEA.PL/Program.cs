@@ -1,8 +1,10 @@
+using IKEA.BLL.Common.Services.Attachements;
 using IKEA.BLL.Services.DepartmentServices;
 using IKEA.BLL.Services.EmployeeServices;
 using IKEA.DAL.Presistence.Data;
 using IKEA.DAL.Presistence.Repositories.Departments;
 using IKEA.DAL.Presistence.Repositories.Employees;
+using IKEA.DAL.Presistence.UnitOfWork;
 using IKEA.PL.Mapping;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,9 +31,13 @@ namespace IKEA.PL
 
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
-            builder.Services.AddScoped<IEmployeeServices, EmplyeeServices>();
+            builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddAutoMapper(M => M.AddProfile(typeof(MappingProfile)));
+
+            builder.Services.AddScoped<IAttachementServices, AttachementServices>();
 
             // No Need =>
 

@@ -31,21 +31,18 @@ namespace IKEA.DAL.Presistence.Repositories._Generics
             var Entity = dbContext.Set<T>().Find(id);
             return Entity;
         }
-        public int Add(T entity)
+        public void Add(T entity)
         {
             dbContext.Set<T>().Add(entity);
-            return dbContext.SaveChanges();
         }
-        public int Update(T entity)
+        public void Update(T entity)
         {
             dbContext.Set<T>().Update(entity);
-            return dbContext.SaveChanges();
         }
-        public int Delete(T entity)
+        public void Delete(T entity)
         {
             entity.IsDeleted = true;
             dbContext.Set<T>().Remove(entity);
-            return dbContext.SaveChanges();
         }
     }
 }

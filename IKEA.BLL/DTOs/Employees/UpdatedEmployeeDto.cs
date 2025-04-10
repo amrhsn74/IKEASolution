@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IKEA.DAL.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace IKEA.BLL.DTOs.Employees
 {
     public class UpdatedEmployeeDto
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Name Is Required")]
         public string Name { get; set; }
         public int? Age { get; set; }
         public string? Address { get; set; }
@@ -23,5 +25,7 @@ namespace IKEA.BLL.DTOs.Employees
         public EmployeeType EmployeeType { get; set; }
         [Display(Name = "Department")]
         public int? DepartmentId { get; set; }
+        public string? ImageName { get; set; }
+        public IFormFile? Image { get; set; }
     }
 }
