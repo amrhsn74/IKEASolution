@@ -1,11 +1,13 @@
 using IKEA.BLL.Common.Services.Attachements;
 using IKEA.BLL.Services.DepartmentServices;
 using IKEA.BLL.Services.EmployeeServices;
+using IKEA.DAL.Models.Identity;
 using IKEA.DAL.Presistence.Data;
 using IKEA.DAL.Presistence.Repositories.Departments;
 using IKEA.DAL.Presistence.Repositories.Employees;
 using IKEA.DAL.Presistence.UnitOfWork;
 using IKEA.PL.Mapping;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.PL
@@ -24,6 +26,21 @@ namespace IKEA.PL
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
             });
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>((options) =>
+            {
+                options.Password.RequiredLength = 5;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                //options.Password.RequireUppercase = true;
+                //options.Password.RequireNonAlphanumeric = true;
+
+                options.User.RequireUniqueEmail = true;
+
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(5);
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             
@@ -66,7 +83,7 @@ namespace IKEA.PL
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
