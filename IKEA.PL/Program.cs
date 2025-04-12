@@ -8,6 +8,7 @@ using IKEA.DAL.Presistence.Repositories.Employees;
 using IKEA.DAL.Presistence.UnitOfWork;
 using IKEA.PL.Mapping;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.PL
@@ -41,6 +42,14 @@ namespace IKEA.PL
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(5);
             }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddAuthentication().AddCookie(Options =>
+            {
+                Options.LoginPath = "/Account/LogIn";
+                Options.AccessDeniedPath = "/Home/Error";
+                Options.ExpireTimeSpan = TimeSpan.FromDays(5);
+                Options.ForwardSignOut = "/Account/LogIn";
+            });
 
             builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             

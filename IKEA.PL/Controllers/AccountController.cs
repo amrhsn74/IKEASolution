@@ -8,10 +8,12 @@ namespace IKEA.PL.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         #region Services
-        public AccountController(UserManager<ApplicationUser> _userManager) 
+        public AccountController(UserManager<ApplicationUser> _userManager,SignInManager<ApplicationUser> _signInManager) 
         {
             userManager = _userManager;
+            signInManager = _signInManager;
         }
         #endregion
         #region SignUp
@@ -55,9 +57,42 @@ namespace IKEA.PL.Controllers
         }
         #endregion
         #region Login
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var user = await userManager.FindByEmailAsync(loginViewModel.Email);
+            
+            if (user is not null)
+            {
+                var result = await signInManager.PasswordSignInAsync(user, loginViewModel.Password,loginViewModel.RememberMe,true);
+                if (result.IsNotAllowed)
+                    ModelState.AddModelError(string.Empty, "Your account is not allowed");
+
+                if (result.IsLockedOut)
+                    ModelState.AddModelError(string.Empty, "Your account is locked out");
+
+                if (result.Succeeded)
+                    return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+            ModelState.AddModelError(string.Empty, "Login Failed");
+            return View(loginViewModel);
+
+        }
+        #endregion
+        #region Logout
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
         }
         #endregion
     }

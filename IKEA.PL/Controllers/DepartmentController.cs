@@ -3,11 +3,13 @@ using Azure.Identity;
 using IKEA.BLL.DTOs.Departments;
 using IKEA.BLL.Services.DepartmentServices;
 using IKEA.PL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace IKEA.PL.Controllers
 {
+    [Authorize]
     public class DepartmentController : Controller
     {
         #region Services - DI
@@ -29,7 +31,7 @@ namespace IKEA.PL.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var Departments = departmentServices.GetAllDepartments();
+            var Departments = await departmentServices.GetAllDepartments();
             return View(Departments);
         }
         #endregion
